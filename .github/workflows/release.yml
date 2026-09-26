@@ -1,0 +1,80 @@
+name: Release
+
+# 这个 workflow 只做一件事：把 package.json 里写着的那一版交进 npm 的待审区
+# （staged publishing）。上架不在这里 —— 要维护者本人在 npmjs.com 点 Approve，那一步要 2FA，
+# 所以 CI 结构上没有把包发出去的能力。
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '要发布的版本号（不带 v 前缀），必须已经写进 package.json 并提交'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# 同一条流水线不并发：两条 stage 记录指向同一个版本只会互相干扰。
+concurrency:
+  group: npm-stage
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # 注册表的 staged publishing 要 npm >= 11.15.0，node 自带的那个不保证到。
+      - name: 升级 npm
+        run: |
+          npm install -g npm@latest
+          npm --version
+
+      - name: 校验版本号
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            want="$INPUT_VERSION"
+          else
+            want="${GITHUB_REF_NAME#v}"
+          fi
+          if [ -z "$want" ]; then
+            echo "::error::没拿到目标版本号"
+            exit 1
+          fi
+          if [ "$version" != "$want" ]; then
+            echo "::error::package.json 写的是 $version，要发的却是 $want —— 先把版本号提交进来，再打 tag"
+            exit 1
+          fi
+          echo "待发布：$(node -p "require('./package.json').name")@$version"
+
+      - run: npm ci
+      - run: npm test
+
+      - name: 写入 npm 鉴权
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: printf '//registry.npmjs.org/:_authToken=%s\n' "$NPM_TOKEN" >> "$HOME/.npmrc"
+
+      - name: 交进 npm 待审区
+        run: npm stage publish --access public
+
+      - name: 下一步（人工）
+        run: |
+          name="$(node -p "require('./package.json').name")"
+          echo "包已进待审区，任何人都 install 不到。要上架："
+          echo "  1. https://www.npmjs.com 的 Staged Packages 页点 Approve（需要 2FA），或"
+          echo "  2. npm stage list $name 拿 stage-id，再 npm stage approve <stage-id>"
+          echo "不想要这一版就 npm stage reject <stage-id>。"

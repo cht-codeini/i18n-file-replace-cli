@@ -1,0 +1,47 @@
+{
+  "name": "@codeini/i18n-file-replace-cli",
+  "version": "1.2.1",
+  "description": "CLI for the i18n resource management platform (https://i18n.codeini.com) - converts code files to i18n-ready files via the external replace API",
+  "keywords": [
+    "i18n",
+    "codeini",
+    "cli",
+    "file-replace"
+  ],
+  "homepage": "https://github.com/cht-codeini/i18n-file-replace-cli#readme",
+  "bugs": {
+    "url": "https://github.com/cht-codeini/i18n-file-replace-cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/cht-codeini/i18n-file-replace-cli.git"
+  },
+  "license": "MIT",
+  "author": "Larry Yuanlin Li",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "bin": {
+    "i18n-replace": "src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "README.zh-CN.md"
+  ],
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --check src/index.js && node --check src/client.js && node --check src/files.js && node --check src/ignore.js && node --check src/zip.js && node --check src/resourceSet.js && node --check src/commands/common.js && node --check src/commands/replace.js && node --check src/commands/preview.js && node --check src/commands/batch.js && node --check src/commands/profiles.js && node --check src/commands/download.js && node --check src/commands/project.js && node --check src/commands/resource.js",
+    "prepublishOnly": "npm test",
+    "publish:npm": "npm stage publish --access public"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
