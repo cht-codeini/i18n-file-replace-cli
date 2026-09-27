@@ -1,6 +1,6 @@
 {
   "name": "@codeini/i18n-file-replace-cli",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "CLI for the i18n resource management platform (https://i18n.codeini.com) - converts code files to i18n-ready files via the external replace API",
   "keywords": [
     "i18n",

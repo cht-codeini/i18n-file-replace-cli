@@ -29,7 +29,7 @@ Calling the API requires a platform API key, provided in one of two ways:
 | Environment variable | Set `I18N_API_KEY` (recommended) |
 | Command line | Add `--api-key <key>` to each command |
 
-- Get your API key from the i18n platform (https://i18n.codeini.com); platform admins configure keys in `ExternalApi:ApiKeys` in `General.Api/appsettings.json`.
+- Register an account at [https://www.codeini.com](https://www.codeini.com), then create an API key in your console. The API key is the universal credential for accessing Codeini platform services (including the i18n platform).
 - On authentication failure (401), check whether the key is correct and enabled.
 
 Other environment variables:

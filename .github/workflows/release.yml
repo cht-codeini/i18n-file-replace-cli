@@ -66,7 +66,13 @@ jobs:
       - name: 写入 npm 鉴权
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: printf '//registry.npmjs.org/:_authToken=%s\n' "$NPM_TOKEN" >> "$HOME/.npmrc"
+        run: |
+          # 空值照样会写进 .npmrc，然后下一步报一坨误导性的 401/404 —— 在这里就说清楚。
+          [ -n "$NPM_TOKEN" ] || {
+            echo "::error::没拿到 NPM_TOKEN secret。应放在 Settings → Secrets and variables → Actions → Repository secrets，名字必须是 NPM_TOKEN。"
+            echo "::error::注意不是 Repository variables（secrets 上下文读不到变量），也不是 Environments 里的 secret（本 job 没声明 environment）。"
+            exit 1; }
+          printf '//registry.npmjs.org/:_authToken=%s\n' "$NPM_TOKEN" >> "$HOME/.npmrc"
 
       - name: 交进 npm 待审区
         run: npm stage publish --access public

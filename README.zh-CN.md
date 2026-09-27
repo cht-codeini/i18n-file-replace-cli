@@ -30,7 +30,7 @@ npx --yes --package @codeini/i18n-file-replace-cli i18n-replace --help
 | 环境变量 | 设置 `I18N_API_KEY`（推荐） |
 | 命令行参数 | 每个命令加 `--api-key <key>` |
 
-- API Key 在 i18n 平台（https://i18n.codeini.com）获取；平台管理员在 `General.Api/appsettings.json` 的 `ExternalApi:ApiKeys` 中配置。
+- 先在 [https://www.codeini.com](https://www.codeini.com) 注册账号，然后在控制台创建 API Key。API Key 是访问 Codeini 平台服务（含 i18n 平台）的通用凭证。
 - 认证失败（401）时，请检查 Key 是否正确、是否已启用。
 
 其他环境变量：
